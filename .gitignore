@@ -9,6 +9,7 @@
 /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
+/[Tt]emp/
 /[Uu]ser[Ss]ettings/
 *.log
 
@@ -33,6 +34,9 @@
 
 # Visual Studio cache directory
 .vs/
+.vscode/
+
+Temp/
 
 # Gradle cache directory
 .gradle/
