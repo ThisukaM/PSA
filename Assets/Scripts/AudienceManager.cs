@@ -85,67 +85,17 @@ public class AudienceManager : MonoBehaviour
     
     System.Collections.IEnumerator TransitionToNewBehavior()
     {
-        // First, stop all current behavior coroutines
+        // Stop all current behavior coroutines
         foreach (var member in audienceMembers)
         {
             member.StopAllCoroutines();
         }
         
-        // Reset everyone to original positions/rotations first
-        yield return StartCoroutine(ResetAudienceToOriginalPositions());
-        
-        // Then apply new behaviors
+        // Apply new behaviors directly without resetting to center
         for (int i = 0; i < audienceMembers.Count; i++)
         {
             StartCoroutine(ApplyEngagementBehavior(audienceMembers[i], scoreBehaviors[currentScore], i));
             yield return new WaitForSeconds(0.1f); // Stagger the starts slightly
-        }
-    }
-    
-    System.Collections.IEnumerator ResetAudienceToOriginalPositions()
-    {
-        float resetTime = 1f;
-        float elapsed = 0f;
-        
-        // Store current positions/rotations
-        Dictionary<CityPeople.CityPeople, Vector3> currentPositions = new Dictionary<CityPeople.CityPeople, Vector3>();
-        Dictionary<CityPeople.CityPeople, Vector3> currentRotations = new Dictionary<CityPeople.CityPeople, Vector3>();
-        
-        foreach (var member in audienceMembers)
-        {
-            currentPositions[member] = member.transform.position;
-            currentRotations[member] = member.transform.eulerAngles;
-        }
-        
-        // Smoothly return to original positions
-        while (elapsed < resetTime)
-        {
-            float progress = elapsed / resetTime;
-            
-            foreach (var member in audienceMembers)
-            {
-                member.transform.position = Vector3.Lerp(
-                    currentPositions[member],
-                    originalPositions[member],
-                    progress
-                );
-                
-                member.transform.rotation = Quaternion.Lerp(
-                    Quaternion.Euler(currentRotations[member]),
-                    Quaternion.Euler(originalRotations[member]),
-                    progress
-                );
-            }
-            
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        
-        // Ensure exact original positions
-        foreach (var member in audienceMembers)
-        {
-            member.transform.position = originalPositions[member];
-            member.transform.rotation = Quaternion.Euler(originalRotations[member]);
         }
     }
     
@@ -204,7 +154,7 @@ public class AudienceManager : MonoBehaviour
         Vector3 originalPos = originalPositions[member];
         Vector3 originalRot = originalRotations[member];
         
-        // Apply behavior based on score
+        // Apply behavior based on score - transition naturally from current position
         switch (currentScore)
         {
             case 10:
@@ -227,13 +177,13 @@ public class AudienceManager : MonoBehaviour
                 
             case 4:
             case 3:
-                // Disengaged - slouching, looking away
+                // Disengaged - slight slouching, occasional looking away
                 yield return StartCoroutine(DisengagedBehavior(member, originalPos, originalRot));
                 break;
                 
             case 2:
             case 1:
-                // Hostile - turned away but still in seat
+                // Hostile - turned away but reasonably
                 yield return StartCoroutine(HostileBehavior(member, originalPos, originalRot));
                 break;
         }
@@ -241,22 +191,30 @@ public class AudienceManager : MonoBehaviour
 
     System.Collections.IEnumerator EngagedBehavior(CityPeople.CityPeople member, Vector3 originalPos, Vector3 originalRot)
     {
-        // Lean slightly forward to show interest (small rotation change only)
-        Vector3 engagedRotation = originalRot + new Vector3(10f, 0f, 0f);
+        // Lean slightly forward to show interest
+        Vector3 engagedRotation = originalRot + new Vector3(8f, 0f, 0f);
         
+        // Transition naturally from current rotation
         float time = 0f;
-        while (time < 2f)
+        while (time < 3f)
         {
             member.transform.rotation = Quaternion.Lerp(
                 member.transform.rotation,
                 Quaternion.Euler(engagedRotation),
+                Time.deltaTime * 0.8f
+            );
+            
+            member.transform.position = Vector3.Lerp(
+                member.transform.position,
+                originalPos,
                 Time.deltaTime * 1f
             );
+            
             time += Time.deltaTime;
             yield return null;
         }
         
-        // Stay engaged - minimal movement
+        // Stay engaged with minimal movement
         while (currentScore >= 9)
         {
             yield return new WaitForSeconds(1f);
@@ -265,41 +223,54 @@ public class AudienceManager : MonoBehaviour
 
     System.Collections.IEnumerator ModerateEngagementBehavior(CityPeople.CityPeople member, Vector3 originalPos, Vector3 originalRot)
     {
+        // Transition to upright, attentive position first
+        Vector3 attentiveRotation = originalRot + new Vector3(3f, 0f, 0f);
+        
+        float transitionTime = 2f;
+        while (transitionTime > 0 && currentScore >= 7 && currentScore <= 8)
+        {
+            member.transform.rotation = Quaternion.Lerp(
+                member.transform.rotation,
+                Quaternion.Euler(attentiveRotation),
+                Time.deltaTime * 1f
+            );
+            
+            member.transform.position = Vector3.Lerp(
+                member.transform.position,
+                originalPos,
+                Time.deltaTime * 1f
+            );
+            
+            transitionTime -= Time.deltaTime;
+            yield return null;
+        }
+        
         // Small fidgets while staying in original position
         while (currentScore >= 7 && currentScore <= 8)
         {
-            yield return new WaitForSeconds(Random.Range(2f, 4f));
+            yield return new WaitForSeconds(Random.Range(3f, 6f));
             
-            // Very small position shift (stay in seat)
-            Vector3 fidgetPos = originalPos + new Vector3(
-                Random.Range(-0.02f, 0.02f), 
-                0, 
-                Random.Range(-0.02f, 0.02f)
-            );
-            
-            // Small head turn
+            // Very small head turn
             Vector3 fidgetRot = originalRot + new Vector3(
-                Random.Range(-5f, 5f),
-                Random.Range(-10f, 10f),
+                Random.Range(0f, 8f),
+                Random.Range(-8f, 8f),
                 0f
             );
             
             // Move to fidget position
-            float fidgetTime = 0.5f;
+            float fidgetTime = 1f;
             while (fidgetTime > 0 && currentScore >= 7 && currentScore <= 8)
             {
-                member.transform.position = Vector3.Lerp(member.transform.position, fidgetPos, Time.deltaTime * 3f);
-                member.transform.rotation = Quaternion.Lerp(member.transform.rotation, Quaternion.Euler(fidgetRot), Time.deltaTime * 2f);
+                member.transform.rotation = Quaternion.Lerp(member.transform.rotation, Quaternion.Euler(fidgetRot), Time.deltaTime * 1.5f);
                 fidgetTime -= Time.deltaTime;
                 yield return null;
             }
             
-            // Return to original
-            fidgetTime = 1f;
+            // Return to attentive position
+            fidgetTime = 2f;
             while (fidgetTime > 0 && currentScore >= 7 && currentScore <= 8)
             {
-                member.transform.position = Vector3.Lerp(member.transform.position, originalPos, Time.deltaTime * 2f);
-                member.transform.rotation = Quaternion.Lerp(member.transform.rotation, Quaternion.Euler(originalRot), Time.deltaTime * 1.5f);
+                member.transform.rotation = Quaternion.Lerp(member.transform.rotation, Quaternion.Euler(attentiveRotation), Time.deltaTime * 1f);
                 fidgetTime -= Time.deltaTime;
                 yield return null;
             }
@@ -311,38 +282,38 @@ public class AudienceManager : MonoBehaviour
         // Look around occasionally but stay seated
         while (currentScore >= 5 && currentScore <= 6)
         {
-            yield return new WaitForSeconds(Random.Range(1f, 3f));
+            yield return new WaitForSeconds(Random.Range(2f, 4f));
             
-            // Look away (head turn only)
+            // Look away - reasonable head turn
             Vector3 lookAwayRotation = originalRot + new Vector3(
-                Random.Range(-15f, 15f), 
-                Random.Range(-45f, 45f), 
+                Random.Range(-5f, 5f), 
+                Random.Range(-20f, 20f), // Reduced further
                 0f
             );
             
-            // Turn to look away
-            float turnTime = 1f;
+            // Turn to look away naturally
+            float turnTime = 2f;
             while (turnTime > 0 && currentScore >= 5 && currentScore <= 6)
             {
                 member.transform.rotation = Quaternion.Lerp(
                     member.transform.rotation,
                     Quaternion.Euler(lookAwayRotation),
-                    Time.deltaTime * 2f
+                    Time.deltaTime * 1f
                 );
                 turnTime -= Time.deltaTime;
                 yield return null;
             }
             
-            yield return new WaitForSeconds(Random.Range(2f, 4f));
+            yield return new WaitForSeconds(Random.Range(3f, 5f));
             
             // Look back to speaker
-            turnTime = 1.5f;
+            turnTime = 3f;
             while (turnTime > 0 && currentScore >= 5 && currentScore <= 6)
             {
                 member.transform.rotation = Quaternion.Lerp(
                     member.transform.rotation,
                     Quaternion.Euler(originalRot),
-                    Time.deltaTime * 1f
+                    Time.deltaTime * 0.7f
                 );
                 turnTime -= Time.deltaTime;
                 yield return null;
@@ -352,37 +323,37 @@ public class AudienceManager : MonoBehaviour
 
     System.Collections.IEnumerator DisengagedBehavior(CityPeople.CityPeople member, Vector3 originalPos, Vector3 originalRot)
     {
-        // Slouch and look away more frequently
-        Vector3 slouchedRotation = originalRot + new Vector3(-20f, Random.Range(-60f, 60f), 0f);
+        // Slight slouch and occasional looking away - much more subtle
+        Vector3 slouchedRotation = originalRot + new Vector3(-8f, Random.Range(-25f, 25f), 0f); // Much reduced
         
-        // Slouch down
-        float slouchTime = 2f;
+        // Slouch gradually
+        float slouchTime = 4f;
         while (slouchTime > 0 && currentScore >= 3 && currentScore <= 4)
         {
             member.transform.rotation = Quaternion.Lerp(
                 member.transform.rotation,
                 Quaternion.Euler(slouchedRotation),
-                Time.deltaTime * 1f
+                Time.deltaTime * 0.5f
             );
             slouchTime -= Time.deltaTime;
             yield return null;
         }
         
-        // Stay disengaged with occasional movement
+        // Stay disengaged with occasional subtle movement
         while (currentScore >= 3 && currentScore <= 4)
         {
-            yield return new WaitForSeconds(Random.Range(3f, 6f));
+            yield return new WaitForSeconds(Random.Range(4f, 8f));
             
-            // Change slouch direction occasionally
-            slouchedRotation = originalRot + new Vector3(-20f, Random.Range(-60f, 60f), 0f);
+            // Change direction slightly
+            slouchedRotation = originalRot + new Vector3(-8f, Random.Range(-25f, 25f), 0f);
             
-            float changeTime = 2f;
+            float changeTime = 3f;
             while (changeTime > 0 && currentScore >= 3 && currentScore <= 4)
             {
                 member.transform.rotation = Quaternion.Lerp(
                     member.transform.rotation,
                     Quaternion.Euler(slouchedRotation),
-                    Time.deltaTime * 0.5f
+                    Time.deltaTime * 0.3f
                 );
                 changeTime -= Time.deltaTime;
                 yield return null;
@@ -392,26 +363,41 @@ public class AudienceManager : MonoBehaviour
 
     System.Collections.IEnumerator HostileBehavior(CityPeople.CityPeople member, Vector3 originalPos, Vector3 originalRot)
     {
-        // Turn significantly away but stay in seat
-        Vector3 hostileRotation = originalRot + new Vector3(0f, Random.Range(120f, 180f), 0f);
+        // Turn away but keep it realistic - maximum 45-60 degrees
+        Vector3 hostileRotation = originalRot + new Vector3(-5f, Random.Range(35f, 50f), 0f); // Much reduced
         
-        // Turn away dramatically
-        float hostileTime = 3f;
+        // Turn away gradually
+        float hostileTime = 5f;
         while (hostileTime > 0 && currentScore >= 1 && currentScore <= 2)
         {
             member.transform.rotation = Quaternion.Lerp(
                 member.transform.rotation,
                 Quaternion.Euler(hostileRotation),
-                Time.deltaTime * 1.5f
+                Time.deltaTime * 0.6f
             );
             hostileTime -= Time.deltaTime;
             yield return null;
         }
         
-        // Stay turned away
+        // Stay turned away with occasional shifts
         while (currentScore >= 1 && currentScore <= 2)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(Random.Range(5f, 10f));
+            
+            // Occasionally shift to look even more away or back slightly
+            Vector3 newHostileRotation = originalRot + new Vector3(-5f, Random.Range(35f, 50f), 0f);
+            
+            float shiftTime = 3f;
+            while (shiftTime > 0 && currentScore >= 1 && currentScore <= 2)
+            {
+                member.transform.rotation = Quaternion.Lerp(
+                    member.transform.rotation,
+                    Quaternion.Euler(newHostileRotation),
+                    Time.deltaTime * 0.4f
+                );
+                shiftTime -= Time.deltaTime;
+                yield return null;
+            }
         }
     }
     
