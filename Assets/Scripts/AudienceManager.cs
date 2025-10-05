@@ -6,15 +6,15 @@ public class AudienceManager : MonoBehaviour
     [Header("Audience Settings")]
     public List<CityPeople.CityPeople> audienceMembers = new List<CityPeople.CityPeople>();
     public float transitionSpeed = 2f;
-    
+
     [Header("Score Ranges")]
     public int currentScore = 10;
     public int previousScore = 10;
-    
+
     private Dictionary<int, AudienceBehavior> scoreBehaviors;
     private Dictionary<CityPeople.CityPeople, Vector3> originalPositions = new Dictionary<CityPeople.CityPeople, Vector3>();
     private Dictionary<CityPeople.CityPeople, Vector3> originalRotations = new Dictionary<CityPeople.CityPeople, Vector3>();
-    
+
     void Start()
     {
         InitializeBehaviors();
@@ -31,12 +31,12 @@ public class AudienceManager : MonoBehaviour
         {
             // Stop the automatic animation coroutine that runs every 15-20 seconds
             member.StopAllCoroutines();
-            
+
             // Use reflection to disable AutoPlayAnimations
-            var autoPlayField = typeof(CityPeople.CityPeople).GetField("AutoPlayAnimations", 
+            var autoPlayField = typeof(CityPeople.CityPeople).GetField("AutoPlayAnimations",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             autoPlayField?.SetValue(member, false);
-            
+
             // Manually take control of the animator
             var animator = member.GetComponent<Animator>();
             if (animator != null && animator.runtimeAnimatorController != null)
@@ -58,7 +58,7 @@ public class AudienceManager : MonoBehaviour
         }
         SetAudienceBehavior(currentScore);
     }
-    
+
     void InitializeBehaviors()
     {
         scoreBehaviors = new Dictionary<int, AudienceBehavior>
@@ -75,14 +75,14 @@ public class AudienceManager : MonoBehaviour
             {1, new AudienceBehavior("Running", 0f, 1f, true, 1f)}
         };
     }
-    
+
     public void UpdateScore(int newScore)
     {
         previousScore = currentScore;
         currentScore = Mathf.Clamp(newScore, 1, 10);
         StartCoroutine(TransitionToNewBehavior());
     }
-    
+
     System.Collections.IEnumerator TransitionToNewBehavior()
     {
         // Stop all current behavior coroutines
@@ -90,7 +90,7 @@ public class AudienceManager : MonoBehaviour
         {
             member.StopAllCoroutines();
         }
-        
+
         // Apply new behaviors directly without resetting to center
         for (int i = 0; i < audienceMembers.Count; i++)
         {
@@ -98,7 +98,7 @@ public class AudienceManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f); // Stagger the starts slightly
         }
     }
-    
+
     void ApplyBehaviorToMember(CityPeople.CityPeople member, float progress, int memberIndex)
     {
         var behavior = scoreBehaviors[currentScore];
@@ -112,11 +112,11 @@ public class AudienceManager : MonoBehaviour
             {
                 // Play the available idle animation with varying speed based on engagement
                 var clip = clips[0]; // Use the only available clip
-                
+
                 // Vary the animation speed based on engagement level
                 float animationSpeed = GetAnimationSpeedForScore(currentScore);
                 animator.speed = animationSpeed;
-                
+
                 Debug.Log($"[Score {currentScore}] Playing '{clip.name}' on {member.name} at speed {animationSpeed:F2}");
                 animator.CrossFadeInFixedTime(clip.name, 0.5f, -1, Random.value * clip.length);
             }
@@ -153,7 +153,7 @@ public class AudienceManager : MonoBehaviour
     {
         Vector3 originalPos = originalPositions[member];
         Vector3 originalRot = originalRotations[member];
-        
+
         // Apply behavior based on score - transition naturally from current position
         switch (currentScore)
         {
@@ -162,25 +162,25 @@ public class AudienceManager : MonoBehaviour
                 // Highly engaged - face forward, lean slightly forward
                 yield return StartCoroutine(EngagedBehavior(member, originalPos, originalRot));
                 break;
-                
+
             case 8:
             case 7:
                 // Moderately engaged - small fidgets while staying in seat
                 yield return StartCoroutine(ModerateEngagementBehavior(member, originalPos, originalRot));
                 break;
-                
+
             case 6:
             case 5:
                 // Distracted - looking around but staying seated
                 yield return StartCoroutine(DistractedBehavior(member, originalPos, originalRot));
                 break;
-                
+
             case 4:
             case 3:
                 // Disengaged - slight slouching, occasional looking away
                 yield return StartCoroutine(DisengagedBehavior(member, originalPos, originalRot));
                 break;
-                
+
             case 2:
             case 1:
                 // Hostile - turned away but reasonably
@@ -193,7 +193,7 @@ public class AudienceManager : MonoBehaviour
     {
         // Lean slightly forward to show interest
         Vector3 engagedRotation = originalRot + new Vector3(8f, 0f, 0f);
-        
+
         // Transition naturally from current rotation
         float time = 0f;
         while (time < 3f)
@@ -203,17 +203,17 @@ public class AudienceManager : MonoBehaviour
                 Quaternion.Euler(engagedRotation),
                 Time.deltaTime * 0.8f
             );
-            
+
             member.transform.position = Vector3.Lerp(
                 member.transform.position,
                 originalPos,
                 Time.deltaTime * 1f
             );
-            
+
             time += Time.deltaTime;
             yield return null;
         }
-        
+
         // Stay engaged with minimal movement
         while (currentScore >= 9)
         {
@@ -225,7 +225,7 @@ public class AudienceManager : MonoBehaviour
     {
         // Transition to upright, attentive position first
         Vector3 attentiveRotation = originalRot + new Vector3(3f, 0f, 0f);
-        
+
         float transitionTime = 2f;
         while (transitionTime > 0 && currentScore >= 7 && currentScore <= 8)
         {
@@ -234,29 +234,29 @@ public class AudienceManager : MonoBehaviour
                 Quaternion.Euler(attentiveRotation),
                 Time.deltaTime * 1f
             );
-            
+
             member.transform.position = Vector3.Lerp(
                 member.transform.position,
                 originalPos,
                 Time.deltaTime * 1f
             );
-            
+
             transitionTime -= Time.deltaTime;
             yield return null;
         }
-        
+
         // Small fidgets while staying in original position
         while (currentScore >= 7 && currentScore <= 8)
         {
             yield return new WaitForSeconds(Random.Range(3f, 6f));
-            
+
             // Very small head turn
             Vector3 fidgetRot = originalRot + new Vector3(
                 Random.Range(0f, 8f),
                 Random.Range(-8f, 8f),
                 0f
             );
-            
+
             // Move to fidget position
             float fidgetTime = 1f;
             while (fidgetTime > 0 && currentScore >= 7 && currentScore <= 8)
@@ -265,7 +265,7 @@ public class AudienceManager : MonoBehaviour
                 fidgetTime -= Time.deltaTime;
                 yield return null;
             }
-            
+
             // Return to attentive position
             fidgetTime = 2f;
             while (fidgetTime > 0 && currentScore >= 7 && currentScore <= 8)
@@ -283,14 +283,14 @@ public class AudienceManager : MonoBehaviour
         while (currentScore >= 5 && currentScore <= 6)
         {
             yield return new WaitForSeconds(Random.Range(2f, 4f));
-            
+
             // Look away - reasonable head turn
             Vector3 lookAwayRotation = originalRot + new Vector3(
-                Random.Range(-5f, 5f), 
+                Random.Range(-5f, 5f),
                 Random.Range(-20f, 20f), // Reduced further
                 0f
             );
-            
+
             // Turn to look away naturally
             float turnTime = 2f;
             while (turnTime > 0 && currentScore >= 5 && currentScore <= 6)
@@ -303,9 +303,9 @@ public class AudienceManager : MonoBehaviour
                 turnTime -= Time.deltaTime;
                 yield return null;
             }
-            
+
             yield return new WaitForSeconds(Random.Range(3f, 5f));
-            
+
             // Look back to speaker
             turnTime = 3f;
             while (turnTime > 0 && currentScore >= 5 && currentScore <= 6)
@@ -325,7 +325,7 @@ public class AudienceManager : MonoBehaviour
     {
         // Slight slouch and occasional looking away - much more subtle
         Vector3 slouchedRotation = originalRot + new Vector3(-8f, Random.Range(-25f, 25f), 0f); // Much reduced
-        
+
         // Slouch gradually
         float slouchTime = 4f;
         while (slouchTime > 0 && currentScore >= 3 && currentScore <= 4)
@@ -338,15 +338,15 @@ public class AudienceManager : MonoBehaviour
             slouchTime -= Time.deltaTime;
             yield return null;
         }
-        
+
         // Stay disengaged with occasional subtle movement
         while (currentScore >= 3 && currentScore <= 4)
         {
             yield return new WaitForSeconds(Random.Range(4f, 8f));
-            
+
             // Change direction slightly
             slouchedRotation = originalRot + new Vector3(-8f, Random.Range(-25f, 25f), 0f);
-            
+
             float changeTime = 3f;
             while (changeTime > 0 && currentScore >= 3 && currentScore <= 4)
             {
@@ -365,7 +365,7 @@ public class AudienceManager : MonoBehaviour
     {
         // Turn away but keep it realistic - maximum 45-60 degrees
         Vector3 hostileRotation = originalRot + new Vector3(-5f, Random.Range(35f, 50f), 0f); // Much reduced
-        
+
         // Turn away gradually
         float hostileTime = 5f;
         while (hostileTime > 0 && currentScore >= 1 && currentScore <= 2)
@@ -378,15 +378,15 @@ public class AudienceManager : MonoBehaviour
             hostileTime -= Time.deltaTime;
             yield return null;
         }
-        
+
         // Stay turned away with occasional shifts
         while (currentScore >= 1 && currentScore <= 2)
         {
             yield return new WaitForSeconds(Random.Range(5f, 10f));
-            
+
             // Occasionally shift to look even more away or back slightly
             Vector3 newHostileRotation = originalRot + new Vector3(-5f, Random.Range(35f, 50f), 0f);
-            
+
             float shiftTime = 3f;
             while (shiftTime > 0 && currentScore >= 1 && currentScore <= 2)
             {
@@ -400,11 +400,11 @@ public class AudienceManager : MonoBehaviour
             }
         }
     }
-    
+
     void SetAudienceBehavior(int score)
     {
         if (!scoreBehaviors.ContainsKey(score)) return;
-        
+
         for (int i = 0; i < audienceMembers.Count; i++)
         {
             ApplyBehaviorToMember(audienceMembers[i], 1f, i);
@@ -421,8 +421,8 @@ public class AudienceBehavior
     public bool shouldFidget;
     public float fidgetIntensity;
     public float animationChangeChance;
-    
-    public AudienceBehavior(string anim, float attention, float disengagement, 
+
+    public AudienceBehavior(string anim, float attention, float disengagement,
                           bool fidget, float fidgetInt)
     {
         primaryAnimation = anim;
