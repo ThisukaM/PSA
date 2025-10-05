@@ -1,35 +1,86 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TestAudienceScene : MonoBehaviour
 {
     public AudienceManager audienceManager;
-    public KeyCode[] scoreKeys = { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5, 
-                                   KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9, KeyCode.Alpha0 };
     
     void Start()
     {
         if (audienceManager == null)
-            audienceManager = FindObjectOfType<AudienceManager>();
+            audienceManager = FindFirstObjectByType<AudienceManager>();
     }
     
     void Update()
     {
-        for (int i = 0; i < scoreKeys.Length; i++)
+        // Test score changes with number keys (1-0 for scores 1-10)
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
-            if (Input.GetKeyDown(scoreKeys[i]))
-            {
-                int score = (i == 9) ? 10 : i + 1;
-                Debug.Log($"Setting score to: {score}");
-                audienceManager.UpdateScore(score);
-            }
+            Debug.Log("Setting score to: 1");
+            audienceManager.UpdateScore(1);
+        }
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 2");
+            audienceManager.UpdateScore(2);
+        }
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 3");
+            audienceManager.UpdateScore(3);
+        }
+        if (Keyboard.current.digit4Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 4");
+            audienceManager.UpdateScore(4);
+        }
+        if (Keyboard.current.digit5Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 5");
+            audienceManager.UpdateScore(5);
+        }
+        if (Keyboard.current.digit6Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 6");
+            audienceManager.UpdateScore(6);
+        }
+        if (Keyboard.current.digit7Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 7");
+            audienceManager.UpdateScore(7);
+        }
+        if (Keyboard.current.digit8Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 8");
+            audienceManager.UpdateScore(8);
+        }
+        if (Keyboard.current.digit9Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 9");
+            audienceManager.UpdateScore(9);
+        }
+        if (Keyboard.current.digit0Key.wasPressedThisFrame)
+        {
+            Debug.Log("Setting score to: 10");
+            audienceManager.UpdateScore(10);
         }
         
-        if (Input.GetKeyDown(KeyCode.G))
+        // Quick test buttons
+        if (Keyboard.current.gKey.wasPressedThisFrame) // G for Good (score 9)
+        {
+            Debug.Log("Setting score to: 9 (Good)");
             audienceManager.UpdateScore(9);
-        if (Input.GetKeyDown(KeyCode.B))
+        }
+        if (Keyboard.current.bKey.wasPressedThisFrame) // B for Bad (score 3)
+        {
+            Debug.Log("Setting score to: 3 (Bad)");
             audienceManager.UpdateScore(3);
-        if (Input.GetKeyDown(KeyCode.T))
+        }
+        if (Keyboard.current.tKey.wasPressedThisFrame) // T for Terrible (score 1)
+        {
+            Debug.Log("Setting score to: 1 (Terrible)");
             audienceManager.UpdateScore(1);
+        }
     }
     
     void OnGUI()
