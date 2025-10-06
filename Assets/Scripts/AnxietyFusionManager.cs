@@ -123,7 +123,7 @@ public class AnxietyFusionManager : MonoBehaviour
     void OnDestroy()
     {
         TryKillPython();
-        try { FlushWindow(force: true); } catch {}
+        try { FlushWindow(force: true); } catch { }
     }
 
     void Update()
@@ -144,7 +144,7 @@ public class AnxietyFusionManager : MonoBehaviour
         try
         {
             string absScript = ResolveProjectPath(bridgeScriptPath);
-            string absJson   = ResolveProjectPath(faceJsonPath);
+            string absJson = ResolveProjectPath(faceJsonPath);
 
             // Ensure output directory exists
             Directory.CreateDirectory(Path.GetDirectoryName(absJson));
