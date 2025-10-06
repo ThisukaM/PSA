@@ -12,14 +12,33 @@ To get started with the project, follow the steps outlined below.
 ### Prerequisites
 
 - Unity 6000.1.15f1: Download and install this version from the [Unity Editor Archive](https://unity.com/releases/editor/archive).
+- Python 3.8 or higher: Required for running the emotion detection system.
 - Working camera and microphone, these can be your machines internal devices (do not need external mic or cam).
 
 ### Steps to Install
 
 - Clone this repository to your local machine.
+- Install the required Python packages for the emotion detection system by running:
+  ```bash
+  pip install -r requirements.txt
+  ```
+  Note: The PyTorch installation defaults to CPU. If you need CUDA support for GPU acceleration, please install the appropriate PyTorch version from [pytorch.org](https://pytorch.org).
 - Launch Unity 6000.1.15f1, then open the project via Unity Hub, and add it.
+
+### Testing the Scene Adaptation
+
+There are two scenes available for testing different aspects of the system:
+
+#### Test Scene (Simulated PSA)
 - Open the Scene named "test" by navigating the project directory under "Assets", then dragging the scene into the Unity hierarchy.
 - Press the play button to start running the project.
+- In this scene, you can test how the scene adapts dynamically to simulated user PSA by pressing keyboard keys **1 through 0** to simulate PSA scores from **1 to 10**.
+
+#### Sample Scene (Real-time Multimodal PSA Detection)
+- To test the multimodal PSA detection engine with real camera and microphone input, open the "SampleScene" instead by navigating to "Assets/Scenes" and dragging it into the Unity hierarchy.
+- Press the play button to start running the project.
+- The detected PSA scores will be displayed on the screen in real-time.
+- A complete log of the detection session will be saved to `RuntimeData/psa_log.ndjson` in the project root directory
 
 ## Deviations from the Project Plan
 
