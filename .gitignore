@@ -109,3 +109,4 @@ InitTestScene*.unity*
 
 /RuntimeData/psa_log.ndjson
 /RuntimeData/face_emotion.json
+/webcam_captures/
