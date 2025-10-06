@@ -27,6 +27,16 @@ The original plan included the usage of a React + JavaScript based web interface
 
 Additionally, there were limitations on the proposed GFMamba model. Instead a combination of an audio-based anxiety detector and the dima806/facial_emotions_image_detection model, an open-sourced, fine-tuned Convolutional Neural Network (CNN) available on the Hugging Face Hub, was used.
 
+## Contributors
+
+- [Stephen Fang](https://github.com/shinramenisbae)
+- [Nicholas Lianto](https://github.com/nlia656)
+- [Thisuka Matara Arachchige](https://github.com/ThisukaM)
+- [Hamish Patel](https://github.com/HamishPatel)
+- [Ronak Patel](https://github.com/Ronak1605)
+- [Zion Suh](https://github.com/zsuh3)
+- [Yuanyuan Zhang](https://github.com/Hapy-Ismart)
+
 ## Attribution
 
 This project makes use of the following third-party assets from the Unity Asset Store.
