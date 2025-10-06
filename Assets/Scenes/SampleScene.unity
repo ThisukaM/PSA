@@ -6392,6 +6392,90 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1383188020}
   m_Mesh: {fileID: 7554516867429595580, guid: a5e2707c3ca237d48988de1246c46a95, type: 3}
+--- !u!1 &1393292446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1393292449}
+  - component: {fileID: 1393292448}
+  - component: {fileID: 1393292447}
+  m_Layer: 0
+  m_Name: AnxietyFusion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1393292447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393292446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb1eda9f42bd1984e8e2a95d45afbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  launchPythonBridge: 1
+  pythonExecutable: python
+  bridgeScriptPath: emotion_bridge.py
+  cameraIndex: 1
+  faceJsonPath: RuntimeData/face_emotion.json
+  audience: {fileID: 1210580783}
+  voiceAnalyzer: {fileID: 1393292448}
+  pollInterval: 0.25
+  smoothing: 0.3
+  faceScore1to5: 3
+  voiceScore1to5: 3
+  fusedScore1to5: 3
+  faceDetections: 0
+  OnFusedScoreUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+  hud: {fileID: 0}
+--- !u!114 &1393292448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393292446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 831f13498cba1e941b755db704a00af8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smoothedAnxietyLevel: 0
+  anxietyText: {fileID: 0}
+  anxietySlider: {fileID: 0}
+  pitchText: {fileID: 0}
+  intensityText: {fileID: 0}
+  statusText: {fileID: 0}
+  detailText: {fileID: 0}
+  sensitivityMultiplier: 1.5
+  responseSpeed: 0.15
+  enableInstantSpikes: 1
+--- !u!4 &1393292449
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393292446}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.04909, y: 0, z: -15.05506}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1396972395
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9944,3 +10028,4 @@ SceneRoots:
   - {fileID: 982199491}
   - {fileID: 1210580784}
   - {fileID: 967782828}
+  - {fileID: 1393292449}
