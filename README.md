@@ -22,3 +22,21 @@ To get started with the project, follow the steps outlined below.
 The original plan included the usage of a React + JavaScript based web interface as the main application, with the usage of Three.js for 3D graphics. However, during planning of the project, the team found limitations with this approach and decided on Unity as the better option moving forward. This was due to a number of factors, including the adoption of the emotion recognition models modes of data collection (camera and microphone integration), and the free 3D assets available for use.
 
 Additionally, there were limitations on the proposed GFMamba model. Instead a combination of an audio-based anxiety detector and the dima806/facial_emotions_image_detection model, an open-sourced, fine-tuned Convolutional Neural Network (CNN) available on the Hugging Face Hub, was used.
+
+## Attribution
+
+This project makes use of the following third-party assets from the Unity Asset Store.
+All assets are used in accordance with their respective license terms and remain the property of their original creators.
+
+Gwangju Theater
+
+URL: https://assetstore.unity.com/packages/3d/environments/gwangju-theater-282533
+Publisher: ONSHOP
+Description: A detailed 3D recreation of a Korean-style theater environment, used as part of the project’s interior setting.
+
+City People – Free Samples
+
+URL: https://assetstore.unity.com/packages/3d/characters/city-people-free-samples-260446
+Publisher: 3DPEOPLE
+Description: A collection of animated 3D human models used to populate scenes with realistic background characters.
+
