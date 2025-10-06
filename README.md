@@ -41,7 +41,12 @@ There are two scenes available for testing different aspects of the system:
 - A complete log of the detection session will be saved to `RuntimeData/psa_log.ndjson` in the project root directory
 
 ### Changing Audience Size
-To change the audience size, in your Unity Editor simply click the intended model representing the avatar to hide/show in the hierarchy and click the box in the top left of the right window
+To change the audience size, in your Unity Editor simply click the intended model representing the avatar to hide/show in the hierarchy and click the box in the top left of the right window, refer to images below:
+
+<img width="1440" height="821" alt="Screenshot 2025-10-06 at 6 34 35 PM" src="https://github.com/user-attachments/assets/05318620-88aa-44a5-ac1a-70a516878c07" />
+<img width="1439" height="823" alt="Screenshot 2025-10-06 at 6 34 43 PM" src="https://github.com/user-attachments/assets/eb7e4591-6366-4569-b52c-e71ce55132d4" />
+
+
 
 ## Deviations from the Project Plan
 
