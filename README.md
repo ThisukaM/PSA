@@ -40,6 +40,9 @@ There are two scenes available for testing different aspects of the system:
 - The detected PSA scores will be displayed on the screen in real-time.
 - A complete log of the detection session will be saved to `RuntimeData/psa_log.ndjson` in the project root directory
 
+### Changing Audience Size
+To change the audience size, in your Unity Editor simply click the intended model representing the avatar to hide/show in the hierarchy and click the box in the top left of the right window
+
 ## Deviations from the Project Plan
 
 The original plan included the usage of a React + JavaScript based web interface as the main application, with the usage of Three.js for 3D graphics. However, during planning of the project, the team found limitations with this approach and decided on Unity as the better option moving forward. This was due to a number of factors, including the adoption of the emotion recognition models modes of data collection (camera and microphone integration), and the free 3D assets available for use.
